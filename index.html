@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>Drawer Count Sheet</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				color: #333;
+				max-width: 40em;
+				border-right: solid;
+				border-left: solid;
+				margin: auto;
+				padding-left: 10px;
+			}
+			h1, h2, h3, h4, h5 {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<h3>Drawer Count Sheet</h3>
+		<form id="form" action="/dev/null">
+			<h4>Coins</h4>
+			<table>
+				<tr>
+					<th><label for="pennies">Pennies</label></th>
+					<td><input type="number" name="pennies" id="pennies"/></td>
+					<td><label for="pennies-bundle">$0.50 Rolls</label></td>
+					<td><input type="number" name="pennies-bundle" 
+						id="pennies-bundle"/></td>
+					<td id="pennies-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="nickels">Nickels</label></th>
+					<td><input type="number" name="nickles" id="nickels"/></td>
+					<td><label for="nickels-bundle">$2 Rolls</label></td>
+					<td><input type="number" name="nickels-bundle"
+						id="nickels-bundle"/></td>
+					<td id="nickels-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="dimes">Dimes</label></th>
+					<td><input type="number" name="dimes" id="dimes"/></td>
+					<td><label for="dimes-bundle">$5 Rolls</label></td>
+					<td><input type="number" name="dimes-bundle"
+						id="dimes-bundle"/></td>
+					<td id="dimes-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="quarters">Quarters</label></th>
+					<td><input type="number" name="quarters" id="quarters"/></td>
+					<td><label for="quarters-bundle">$10 Rolls</label></td>
+					<td><input type="number" name="quarters-bundle"
+						id="quarters-bundle"/></td>
+					<td id="quarters-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="half-dollars">Half-Dollars</label></th>
+					<td><input type="number" name="half-dollars"
+						id="half-dollars"/></td>
+					<td/>
+					<td/>
+					<td id="half-dollars-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="dollars">Dollars</label></th>
+					<td><input type="number" name="dollars" id="dollars"/></td>
+					<td/>
+					<td/>
+					<td id="dollars-total">$0</td>
+				</tr>
+				<tr>
+					<th colspan="2"><strong>Total</strong></th>
+					<td colspan="3" id="coins-total">$0</td>
+				</tr>
+			</table>
+
+			<h4>Notes</h4>
+			<table>
+				<tr>
+					<th><label for="1s">$1s</label></th>
+					<td><input type="number" name="1s" id="1s"/></td>
+					<td><label for="1s-bundle">$25 Bundles</label></td>
+					<td><input type="number" name="1s-bundle" id="1s-bundle"/></td>
+					<td id="1s-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="2s">$2s</label></th>
+					<td><input type="number" name="2s" id="2s"/></td>
+					<td/>
+					<td/>
+					<td id="2s-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="5s">$5s</label></th>
+					<td><input type="number" name="5s" id="5s"/></td>
+					<td><label for="5s-bundle">$100 Bundles</label></td>
+					<td><input type="number" name="5s-bundle" id="5s-bundle"/></td>
+					<td id="5s-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="10s">$10s</label></th>
+					<td><input type="number" name="10s" id="10s"/></td>
+					<td/>
+					<td/>
+					<td id="10s-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="20s">$20s</label></th>
+					<td><input type="number" name="20s" id="20s"/></td>
+					<td/>
+					<td/>
+					<td id="20s-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="50s">$50s</label></th>
+					<td><input type="number" name="50s" id="50s"/></td>
+					<td/>
+					<td/>
+					<td id="50s-total">$0</td>
+				</tr>
+				<tr>
+					<th><label for="100s">$100s</label></th>
+					<td><input type="number" name="100s" id="100s"/></td>
+					<td/>
+					<td/>
+					<td id="100s-total">$0</td>
+				</tr>
+				<tr>
+					<th colspan="3"><strong>Total</strong></th>
+					<td colspan="2" id="notes-total">$0</td>
+				</tr>
+				<tr>
+					<th colspan="3"><strong>Grand Total</strong></th>
+					<td colspan="1" id="total">$0</td>
+					<td><input type="submit" value="Calculate"/></td>
+				</tr>
+			</table>
+		</form>
+		<script>
+			var make_writer = function(el) {
+				var label = document.getElementById(el)
+				/* create a closure containing the reference 
+				 * to the desired element */
+				return function(num) {
+					label.textContent="$" + num
+					return num
+				}
+			}
+			var write_coins_total = make_writer("coins-total")
+			var write_notes_total = make_writer("notes-total")
+			var write_total = make_writer("total")
+
+			/* input: [currency name, currency value, currency bundle value]
+			 * return: [currency total reference, currency count reference,
+			 *   currency value to a dollar, currency value,
+			 *   currency bundle count reference, currency bundle value */
+			var expand_currency = function(x) {
+					if (x[3]) {
+						return [document.getElementById(x[0] + "-total"),
+							document.getElementById(x[0]), x[1], x[2],
+							document.getElementById(x[0] + "-bundle"), x[3]]
+					} else {
+						return [document.getElementById(x[0] + "-total"),
+							document.getElementById(x[0]), x[1], x[2]]
+					}
+			}
+
+			/* input: an accumulator, and an array output by expand_currency
+			 * multiplies the count of the selected denomination by its value,
+			 *   does the same for a bundle of that currency, if applicable,
+			 *   and adds the values to the accumulator
+			 * return: the new accumulator */
+			var count_denom = function(acc, val) {
+				var tmp = val[1].value * val[3]
+				if (val[4]) {
+					tmp += val[4].value * val[5]
+				}
+				val[0].textContent = "$" + tmp / val[2]
+				return acc + tmp
+			}
+
+			var recount = function() {
+				/* Build an array containing an entry for each denomination
+				 * Each entry contains the id of the element,
+				 * the fraction of a dollar represented by the values,
+				 * the count of the single pieces of currency, 
+				 * (optionally) the count of standard bundles of the currency,
+				 * the values of the singles and bundles,
+				 * and the counted total */
+				// COINS
+				var coins = [["pennies", 100, 1, 50], ["nickels", 100, 5, 200],
+					["dimes", 100, 10, 500], ["quarters", 100, 25, 1000],
+					["half-dollars", 100, 50], ["dollars", 100, 100]].map(expand_currency)
+				//NOTES
+				var notes = [["1s", 1, 1, 25], ["2s", 1, 2], ["5s", 1, 5, 100],
+					["10s", 1, 10], ["20s", 1, 20], ["50s", 1, 50], ["100s", 1, 100]].map(expand_currency)
+
+				return function() {
+					write_total(
+						write_coins_total(coins.reduce(count_denom, 0) / 100) +
+						write_notes_total(notes.reduce(count_denom, 0)))
+				}
+			}()
+			function process_form(event) {
+				if (event.preventDefault) { event.preventDefault() }
+				recount()
+				return false
+			}
+			{
+				var form = document.getElementById("form")
+				form.addEventListener("submit", process_form)
+			}
+		</script>
+		</body>
+</html>
+
